@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hqyj.EduAdmSystem.system.dao.AttendanceMapper">
+	<resultMap type="Attendance" id="AttendanceMap">
+		<id column="atten_id" property="attenId" />
+		<result column="atten_state" property="attenState" />
+		<result column="attend_create_time" property="attendCreateTime" />
+		<association property="course"
+			javaType="com.hqyj.EduAdmSystem.system.entity.Course">
+			<id column="c_id" property="cId" />
+			<result column="c_name" property="cName" />
+			<result column="c_classRoom" property="cClassRoom" />
+		</association>
+		
+		<association property="user"
+			javaType="com.hqyj.EduAdmSystem.system.entity.User">
+			<id column="u_id" property="uId" />
+			<result column="u_username" property="uUsername" />
+			<result column="u_password" property="uPassword" />
+			<result column="u_realname" property="uRealname" />
+			<result column="u_state" property="uState" />
+		</association>
+	</resultMap>
+<!-- ####################queryAttendanceByUserid查询自身############################### -->
+	<select id="queryAttendanceByUserid" parameterType="java.lang.String"
+		resultMap="AttendanceMap">
+		SELECT
+	*
+	FROM
+	s_user,
+	s_course,
+	s_attendance
+	WHERE
+	s_user.u_id = s_attendance.atten_u_id
+	AND s_course.c_id = s_attendance.atten_c_id
+	AND s_user.u_id=#{uId}
+	</select>
+	<!-- ####################queryAttendanceAll查询所有############################### -->
+	<select id="queryAttendanceAll" 
+		resultMap="AttendanceMap">
+		SELECT
+	*
+	FROM
+	s_user,
+	s_course,
+	s_attendance
+	WHERE
+	s_user.u_id = s_attendance.atten_u_id
+	AND s_course.c_id = s_attendance.atten_c_id	
+	</select>
+	<!-- ###################queryStudentAll(urid)主任查询################################ -->
+	<select id="queryStudentAll"  parameterType="java.lang.Integer"
+		resultMap="AttendanceMap">
+	 SELECT
+*
+FROM
+	s_user,
+	s_course,
+	s_attendance
+WHERE
+	s_user.u_id = s_attendance.atten_u_id
+AND s_course.c_id = s_attendance.atten_c_id
+AND s_user.u_r_id=#{urid} 
+<!-- SELECT
+*
+FROM
+s_user
+INNER JOIN s_attendance ON s_user.u_id = s_attendance.atten_u_id
+INNER JOIN s_course ON s_attendance.atten_c_id = s_course.c_id
+INNER JOIN s_role ON s_role.r_id = s_user.u_r_id
+WHERE s_user.u_r_id=#{urid} 想拿改语句拿到角色名，但需要改变考勤类的User对象为一个List才行-->
+	</select>
+	<delete id="deleteAttendance" parameterType="java.lang.String">
+		delete from s_attendance
+		where atten_id=#{attenId}
+	</delete>
+	<!-- ###################修改################################ -->
+ <update id="updateAttendance" parameterType="com.hqyj.EduAdmSystem.system.entity.Attendance">
+		update s_attendance 
+		set atten_state =#{attenState,jdbcType=VARCHAR} 
+		WHERE atten_id=#{attenId,jdbcType=VARCHAR}
+		
+	</update>
+	
+	
+	 <update id="updateAttendance_sta" parameterType="com.hqyj.EduAdmSystem.system.entity.Attendance">
+		update s_attendance 
+		set atten_state =#{1}
+		WHERE atten_id=#{0}
+	</update>
+
+
+
+
+
+<!-- #####################################分页查询和总条数查询############################################ -->
+
+
+
+
+
+	
+	<!-- 分页查询无条件 -->
+	<select id="queryAttendanceAllByPage" parameterType="com.hqyj.EduAdmSystem.system.util.Page"
+		resultMap="AttendanceMap">
+		SELECT
+	*
+	FROM
+	s_user,
+	s_course,
+	s_attendance
+	WHERE
+	s_user.u_id = s_attendance.atten_u_id
+	AND s_course.c_id = s_attendance.atten_c_id
+	limit #{start},#{rows}	
+	</select>
+	
+	
+	<!-- 分页查询带Rid条件学生 -->
+	<select id="queryStudentByPageRid" parameterType="com.hqyj.EduAdmSystem.system.util.Page"
+		resultMap="AttendanceMap">
+		SELECT
+	*
+	FROM
+	s_user,
+	s_course,
+	s_attendance
+	WHERE
+	s_user.u_id = s_attendance.atten_u_id
+	AND s_course.c_id = s_attendance.atten_c_id
+	AND s_user.u_r_id='4'
+	limit #{start},#{rows}	
+	</select>
+	<!-- 分页查询带Rid条件老师 -->
+	<select id="queryTeacherByPageRid" parameterType="com.hqyj.EduAdmSystem.system.util.Page"
+		resultMap="AttendanceMap">
+		SELECT
+	*
+	FROM
+	s_user,
+	s_course,
+	s_attendance
+	WHERE
+	s_user.u_id = s_attendance.atten_u_id
+	AND s_course.c_id = s_attendance.atten_c_id
+	AND s_user.u_r_id='3'
+	limit #{start},#{rows}	
+	</select>
+	
+	
+	
+	
+	
+	<!-- 分页查询带Uid条件 -->
+	<select id="queryAttendanceAllByPageUid" parameterType="com.hqyj.EduAdmSystem.system.util.Page"
+		resultMap="AttendanceMap">
+		SELECT
+	*
+	FROM
+	s_user,
+	s_course,
+	s_attendance
+	WHERE
+	s_user.u_id = s_attendance.atten_u_id
+	AND s_course.c_id = s_attendance.atten_c_id
+	AND s_user.u_id=#{t.user.uId}
+	limit #{start},#{rows}	
+	</select>
+	
+	<!-- 查询总条数不传参数 -->
+	<select id="queryAttendanceCountByPage" 
+		resultType="java.lang.Integer">
+		SELECT
+	COUNT(*)
+	FROM
+	s_user,
+	s_course,
+	s_attendance
+	WHERE
+	s_user.u_id = s_attendance.atten_u_id
+	AND s_course.c_id = s_attendance.atten_c_id
+	
+	</select>
+	<!-- 查询老师总条数传参数rId -->
+	<select id="queryTeacherCountByPageRid" parameterType="com.hqyj.EduAdmSystem.system.util.Page"
+		resultType="java.lang.Integer">
+		SELECT
+	COUNT(*)
+	FROM
+	s_user,
+	s_course,
+	s_attendance
+	WHERE
+	s_user.u_id = s_attendance.atten_u_id
+	AND s_course.c_id = s_attendance.atten_c_id
+	AND s_user.u_r_id='3'	
+	</select>
+	
+	<!-- 查询学生总条数传参数rId -->
+	<select id="queryStudentCountByPageRid" parameterType="com.hqyj.EduAdmSystem.system.util.Page"
+		resultType="java.lang.Integer">
+		SELECT
+	COUNT(*)
+	FROM
+	s_user,
+	s_course,
+	s_attendance
+	WHERE
+	s_user.u_id = s_attendance.atten_u_id
+	AND s_course.c_id = s_attendance.atten_c_id
+	AND s_user.u_r_id='4'	
+	</select>
+	
+	
+	<!-- 查询总条数传参数UId -->
+	<select id="queryAttendanceCountByPageUid" parameterType="com.hqyj.EduAdmSystem.system.util.Page"
+		resultType="java.lang.Integer">
+		SELECT
+	COUNT(*)
+	FROM
+	s_user,
+	s_course,
+	s_attendance
+	WHERE
+	s_user.u_id = s_attendance.atten_u_id
+	AND s_course.c_id = s_attendance.atten_c_id
+	 AND s_user.u_id= #{t.user.uId}	
+	
+	</select>
+</mapper>

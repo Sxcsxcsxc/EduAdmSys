@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hqyj.EduAdmSystem.system.dao.GradeMapper">
+	<resultMap type="Grade" id="queryOneGradeByUserId">
+		<id column="g_id" property="gId" />
+		<result column="g_u_id" property="gUid" />
+		<result column="g_c_id" property="gCid" />
+		<result column="g_grade" property="gGrade" />
+		<association property="course"
+			javaType="com.hqyj.EduAdmSystem.system.entity.Course">
+			<result column="c_name" property="cName" />
+		</association>
+		<association property="user"
+			javaType="com.hqyj.EduAdmSystem.system.entity.User">
+			<id column="u_id" property="uId" />
+			<result column="u_username" property="uUsername" />
+			<result column="u_password" property="uPassword" />
+			<result column="u_realname" property="uRealname" />
+			<result column="u_state" property="uState" />
+		</association>
+	</resultMap>
+		<select id="queryOneGradeByUserId" parameterType="java.lang.String"
+			resultMap="queryOneGradeByUserId">
+			SELECT* FROM s_course AS c,s_grade AS g,s_user AS u WHERE g.g_u_id = #{uId}
+			and c.c_id = g.g_c_id and u.u_id=g.g_u_id
+		</select>
+		<select id="queryOneGradeByGid" parameterType="java.lang.String"
+			resultMap="queryOneGradeByUserId">
+			SELECT* FROM s_course AS c,s_grade AS g,s_user AS u WHERE
+			g.g_id=#{gId} and c.c_id = g.g_c_id and u.u_id=g.g_u_id
+		</select>
+		<insert id="addOneGrade" parameterType="com.hqyj.EduAdmSystem.system.entity.Grade">
+			insert into
+			s_grade(g_u_id,g_c_id,g_grade)
+			values(#{gUid},#{gCid},#{gGrade})
+		</insert>
+
+		<update id="updateOneGrade" parameterType="com.hqyj.EduAdmSystem.system.entity.Grade">
+			update s_grade
+			set g_c_id=#{gCid},g_grade=#{gGrade}
+			where g_u_id=#{gUid} and g_c_id=#{gCid}
+		</update>
+		
+		<delete id="deleteOneGrade" parameterType="com.hqyj.EduAdmSystem.system.entity.Grade">
+			DELETE FROM s_grade where g_id=#{gId}
+		</delete>
+		
+</mapper>

@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hqyj.EduAdmSystem.system.dao.ScheduleMapper">
+	<resultMap type="com.hqyj.EduAdmSystem.system.entity.Schedule"
+		id="BaseResultMap">
+		<id column="schedule_id" property="scheduleId" />
+		<result column="schedule_time" property="scheduleTime" />
+		<association property="course"
+			javaType="com.hqyj.EduAdmSystem.system.entity.Course">
+			<id column="c_id" property="cId" />
+			<result column="c_name" property="cName" />
+			<result column="c_classRoom" property="cClassRoom" />
+		</association>
+
+		<association property="teaUser"
+			javaType="com.hqyj.EduAdmSystem.system.entity.User">
+			<id column="u_id" property="uId" />
+			<result column="u_username" property="uUsername" />
+			<result column="u_password" property="uPassword" />
+			<result column="u_realname" property="uRealname" />
+			<result column="u_state" property="uState" />
+		</association>
+		<association property="stuUser"
+			javaType="com.hqyj.EduAdmSystem.system.entity.User">
+			<id column="u_id" property="uId" />
+			<result column="u_username" property="uUsername" />
+			<result column="u_password" property="uPassword" />
+			<result column="u_realname" property="uRealname" />
+			<result column="u_state" property="uState" />
+		</association>
+	</resultMap>
+
+	<resultMap type="com.hqyj.EduAdmSystem.system.entity.Schedule"
+		id="BaseResultMap1">
+		<id column="schedule_id" property="scheduleId" />
+		<result column="schedule_time" property="scheduleTime" />
+		<result column="schedule_day" property="scheduleDay" />
+		<association property="course"
+			javaType="com.hqyj.EduAdmSystem.system.entity.Course">
+			<id column="c_id" property="cId" />
+			<result column="c_name" property="cName" />
+			<result column="c_classRoom" property="cClassRoom" />
+		</association>
+		<association property="user"
+			javaType="com.hqyj.EduAdmSystem.system.entity.User">
+			<id column="u_id" property="uId" />
+			<result column="u_realname" property="uRealname" />
+		</association>
+	</resultMap>
+
+	<resultMap type="com.hqyj.EduAdmSystem.system.entity.Schedule"
+		id="BaseResultMap2">
+		<id column="schedule_id" property="scheduleId" />
+		<association property="course"
+			javaType="com.hqyj.EduAdmSystem.system.entity.Course">
+			<result column="c_name" property="cName" />
+			<result column="c_classRoom" property="cClassRoom" />
+		</association>
+	</resultMap>
+
+	<resultMap type="com.hqyj.EduAdmSystem.system.entity.SelectCourse"
+		id="BaseResultMap3">
+		<id column="sc_id" property="scId" />
+		<result column="sc_u_id" property="scUid" />
+		<result column="sc_schedule_id" property="scSchenduleId" />
+	</resultMap>
+
+	<select id="queryCourseIsExit" parameterType="java.lang.String"
+		resultMap="BaseResultMap3">
+		SELECT *
+		FROM s_select_course
+		WHERE s_select_course.sc_schedule_id=#{1} AND
+		s_select_course.sc_u_id=#{0}
+	</select>
+	<select id="queryScheduleByteacherId" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		SELECT
+		*
+		<!-- s_schedule.schedule_id, tea.u_realname AS tea, stu.u_realname, s_course.c_name, 
+			s_schedule.schedule_time -->
+		FROM
+		s_schedule,
+		s_course,
+		s_user AS tea,
+		s_user AS stu
+		WHERE
+		schedule_teacherId = tea.u_id
+		AND s_course.c_id = schedule_c_id
+		AND
+		stu.u_id = schedule_studentId
+		AND schedule_teacherId = #{teaUser.u_id}
+	</select>
+
+	<select id="querySchedule" resultMap="BaseResultMap">
+		SELECT
+		*
+		FROM
+		s_schedule
+		INNER JOIN s_course ON s_course.c_id = s_schedule.schedule_c_id
+		INNER JOIN s_user AS tea ON tea.u_id = s_schedule.schedule_teacherId
+		INNER JOIN s_user AS stu ON stu.u_id = s_schedule.schedule_studentId
+
+	</select>
+
+
+	<select id="queryScheduleAll" parameterType="java.lang.String"
+		resultMap="BaseResultMap1">
+		SELECT *
+		FROM s_schedule AS s, s_course AS c,s_user as u
+		WHERE s.schedule_c_id=c_id AND u.u_id= s.schedule_teacherId
+		ORDER BY s.schedule_id 
+	</select>
+
+
+	<!--查询每天课程信息 -->
+	<select id="queryScheduleMon" parameterType="java.lang.String"
+		resultMap="BaseResultMap2">
+		SELECT *FROM s_schedule as s LEFT JOIN s_select_course AS sc
+		ON
+		s.schedule_c_id =sc.sc_schedule_id LEFT JOIN s_course as c
+		ON
+		c.c_id=s.schedule_c_id
+		WHERE s.schedule_day='1' AND( sc.sc_u_id =#{0}
+		OR sc.sc_u_id IS NULL)
+		ORDER BY s.schedule_time
+	</select>
+	<select id="queryScheduleTues" parameterType="java.lang.String"
+		resultMap="BaseResultMap2">
+		SELECT *FROM s_schedule as s LEFT JOIN s_select_course AS sc
+		ON
+		s.schedule_c_id =sc.sc_schedule_id LEFT JOIN s_course as c
+		ON
+		c.c_id=s.schedule_c_id
+		WHERE s.schedule_day='2' AND( sc.sc_u_id =#{0}OR
+		sc.sc_u_id IS NULL)
+		ORDER BY s.schedule_time
+	</select>
+	<select id="queryScheduleWed" parameterType="java.lang.String"
+		resultMap="BaseResultMap2">
+		SELECT *FROM s_schedule as s LEFT JOIN s_select_course AS sc
+		ON
+		s.schedule_c_id =sc.sc_schedule_id LEFT JOIN s_course as c
+		ON
+		c.c_id=s.schedule_c_id
+		WHERE s.schedule_day='3' AND( sc.sc_u_id =#{0}
+		OR sc.sc_u_id IS NULL)
+		ORDER BY s.schedule_time
+	</select>
+	<select id="queryScheduleThur" parameterType="java.lang.String"
+		resultMap="BaseResultMap2">
+		SELECT *FROM s_schedule as s LEFT JOIN s_select_course AS sc
+		ON
+		s.schedule_c_id =sc.sc_schedule_id LEFT JOIN s_course as c
+		ON
+		c.c_id=s.schedule_c_id
+		WHERE s.schedule_day='4' AND( sc.sc_u_id =#{0}
+		OR sc.sc_u_id IS NULL)
+		ORDER BY s.schedule_time
+	</select>
+
+	<select id="queryScheduleFri" parameterType="java.lang.String"
+		resultMap="BaseResultMap2">
+		SELECT *FROM s_schedule as s LEFT JOIN s_select_course AS sc
+		ON
+		s.schedule_c_id =sc.sc_schedule_id LEFT JOIN s_course as c
+		ON
+		c.c_id=s.schedule_c_id
+		WHERE s.schedule_day='5' AND( sc.sc_u_id =#{0}
+		OR sc.sc_u_id IS NULL)
+		ORDER BY s.schedule_time
+	</select>
+
+</mapper>

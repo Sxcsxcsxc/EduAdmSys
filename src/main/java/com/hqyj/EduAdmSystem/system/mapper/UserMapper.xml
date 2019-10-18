@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hqyj.EduAdmSystem.system.dao.UserMapper">
+	<resultMap type="User" id="findUser">
+		<id column="u_id" property="uId" />
+		<result column="u_username" property="uUsername" />
+		<result column="u_password" property="uPassword" />
+		<result column="u_realname" property="uRealname" />
+		<result column="u_state" property="uState" />
+		<result column="u_realPW" property="uRealPW" />
+		<association property="role"
+			javaType="com.hqyj.EduAdmSystem.system.entity.Role">
+			<id column="r_id" property="rid" />
+			<result column="r_rolename" property="rname" />
+		</association>
+	</resultMap>
+
+	<resultMap type="com.hqyj.EduAdmSystem.system.entity.UserForCU"
+		id="UserForCU">
+		<id column="u_id" property="uId" />
+		<result column="u_username" property="uUsername" />
+		<result column="u_password" property="uPassword" />
+		<result column="u_r_id" property="roleId" />
+		<result column="u_realname" property="uRealname" />
+		<result column="u_state" property="uState" />
+		<result column="u_realPW" property="uRealPW" />
+	</resultMap>
+
+	<select id="findUserByName" parameterType="java.lang.String"
+		resultMap="findUser">
+		SELECT*from s_user u,s_role r where u.u_r_id = r.r_id and
+		u.u_username=#{userName}
+	</select>
+	<select id="queryUserByName" parameterType="java.lang.String"
+		resultType="int">
+		SELECT COUNT(*) from s_user where u_username=#{userName}
+	</select>
+
+	<select id="queryAllUserCountByRoleId" parameterType="java.lang.String"
+		resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM s_user where u_r_id = #{rid}
+	</select>
+
+	<select id="queryAllUserByRoleId" parameterType="java.lang.String"
+		resultMap="findUser">
+		SELECT*from s_user u,s_role r where u.u_r_id = r.r_id and
+		u.u_r_id=#{rid}
+	</select>
+	<select id="queryUserByUserId" parameterType="java.lang.String"
+		resultMap="findUser">
+		SELECT*from s_user u where u.u_id=#{Uid}
+	</select>
+
+	<!-- 通过updata来实现deletUserByUserId功能 -->
+	<update id="updateUserByUserForCU" parameterType="com.hqyj.EduAdmSystem.system.entity.UserForCU">
+		update s_user
+		<set>
+			<if test="uUsername != null and uUsername != ''">
+				u_username = #{uUsername,jdbcType=VARCHAR},
+			</if>
+			<if test="uPassword != null and uPassword != ''">
+				u_password = #{uPassword,jdbcType=VARCHAR},
+			</if>
+			<if test="uRealname != null and uRealname != ''">
+				u_realname = #{uRealname,jdbcType=VARCHAR},
+			</if>
+			<if test="uState != null and uState != ''">
+				u_state = #{uState,jdbcType=VARCHAR},
+			</if>
+			<if test="roleId != null and roleId != ''">
+				u_r_id = #{roleId,jdbcType=VARCHAR},
+			</if>
+			<if test="uRealPW != null and uRealPW != ''">
+				u_realPW = #{uRealPW,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where u_id = #{uId,jdbcType=VARCHAR}
+	</update>
+
+	<!-- addUserByUserForCU -->
+	<insert id="addUserByUserForCU" parameterType="com.hqyj.EduAdmSystem.system.entity.UserForCU">
+		insert into s_user
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="uId != null and uId != ''">
+				u_id,
+			</if>
+			<if test="uUsername != null and uUsername != ''">
+				u_username,
+			</if>
+			<if test="uPassword != null and uPassword != ''">
+				u_password,
+			</if>
+			<if test="roleId != null and roleId != ''">
+				u_r_id,
+			</if>
+			<if test="uRealname != null and uRealname != ''">
+				u_realname,
+			</if>
+			<if test="uState != null and uState != ''">
+				u_state,
+			</if>
+			<if test="uRealPW != null and uRealPW != ''">
+				u_realPW,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="uId != null and uId != ''">
+				#{uId,jdbcType=VARCHAR},
+			</if>
+			<if test="uUsername != null and uUsername != ''">
+				#{uUsername,jdbcType=VARCHAR},
+			</if>
+			<if test="uPassword != null and uPassword != ''">
+				#{uPassword,jdbcType=VARCHAR},
+			</if>
+			<if test="roleId != null and roleId != ''">
+				#{roleId,jdbcType=VARCHAR},
+			</if>
+			<if test="uRealname != null and uRealname != ''">
+				#{uRealname,jdbcType=VARCHAR},
+			</if>
+			<if test="uState != null and uState != ''">
+				#{uState,jdbcType=VARCHAR},
+			</if>
+			<if test="uRealPW != null and uRealPW != ''">
+				#{uRealPW,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+
+	<!-- 分页查询总条数 -->
+	<select id="queryAllUserCountByPage" parameterType="com.hqyj.EduAdmSystem.system.util.Page"
+		resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM s_user
+		<where>
+			<if test="t.uId != null and t.uId != ''">
+				<bind name="uIdLike" value="'%'+t.uId+ '%'" />
+				AND u_id like #{uIdLike,jdbcType=VARCHAR}
+			</if>
+			<if test="t.uUsername != null and t.uUsername != ''">
+				<bind name="uUsernameLike" value="'%'+t.uUsername+ '%'" />
+				AND u_username like #{uUsernameLike,jdbcType=VARCHAR}
+			</if>
+			<if test="t.roleId != null and t.roleId != ''">
+				AND u_r_id = #{t.roleId,jdbcType=VARCHAR}
+			</if>
+			<if test="t.uRealname != null and t.uRealname != ''">
+				<bind name="uRealnameLike" value="'%'+t.uRealname+ '%'" />
+				AND u_realname like #{uRealnameLike,jdbcType=VARCHAR}
+			</if>
+			<if test="t.uState != null and t.uState != ''">
+				AND u_state = #{t.uState,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+	<!-- 实现分页查询，条件查询，模糊查询 -->
+	<select id="queryAllUserListByPage" parameterType="com.hqyj.EduAdmSystem.system.util.Page"
+		resultMap="UserForCU">
+		SELECT * FROM s_user
+		<where>
+			<if test="t.uId != null and t.uId != ''">
+				<bind name="uIdLike" value="'%'+t.uId+ '%'" />
+				AND u_id like #{uIdLike,jdbcType=VARCHAR}
+			</if>
+			<if test="t.uUsername != null and t.uUsername != ''">
+				<bind name="uUsernameLike" value="'%'+t.uUsername+ '%'" />
+				AND u_username like #{uUsernameLike,jdbcType=VARCHAR}
+			</if>
+			<if test="t.roleId != null and t.roleId != ''">
+				AND u_r_id = #{t.roleId,jdbcType=VARCHAR}
+			</if>
+			<if test="t.uRealname != null and t.uRealname != ''">
+				<bind name="uRealnameLike" value="'%'+t.uRealname+ '%'" />
+				AND u_realname like #{uRealnameLike,jdbcType=VARCHAR}
+			</if>
+			<if test="t.uState != null and t.uState != ''">
+				AND u_state = #{t.uState,jdbcType=VARCHAR}
+			</if>
+		</where>
+		ORDER BY u_id DESC
+		limit #{start},#{rows}
+	</select>
+</mapper>

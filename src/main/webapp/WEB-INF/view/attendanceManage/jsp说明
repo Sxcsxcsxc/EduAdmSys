@@ -1,0 +1,7 @@
+attendanceList.jsp用于校长独有功能查询《所有人员考勤》并且能删查改考勤
+attendanceListMyself.jsp 用于功能查询《我的考勤》，只能查看不能进行修改，删除
+attendanceListStudentAll.jsp 用于主任和校长查询《学生所有考勤》并且能删查改考勤
+attendanceListTeacherAll.jsp	用于主任和校长查询《讲师所有考勤》并且能删查改考勤
+attendanceListStudentC.jsp   用于主任和校长查询《学生所有考勤》
+attendanceListTeacherC.jsp  用于主任和校长查询《讲师所有考勤》
+attendanceListTest.jsp  用于测试查询等同于attendanceList.jsp

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hqyj.EduAdmSystem.system.dao.CourseMapper">
+	<resultMap type="com.hqyj.EduAdmSystem.system.entity.Course"
+		id="findCourse">
+		<id column="c_id" property="cId" />
+		<result column="c_name" property="cName" />
+		<result column="c_classRoom" property="cClassRoom" />
+
+	</resultMap>
+
+	<select id="queryClassroom" resultMap="findCourse">
+		select * from s_course
+	</select>
+	<insert id="insertClassroom" parameterType="com.hqyj.EduAdmSystem.system.entity.Course">
+		insert into
+		s_course(c_id,c_name,c_classRoom)
+		values(#{cId},#{cName},#{cClassRoom})
+	</insert>
+
+	<delete id="deleteClassroom" parameterType="java.lang.String">
+		delete from s_course
+		where c_id=#{cid}
+	</delete>
+	<update id="updateClassroom" parameterType="com.hqyj.EduAdmSystem.system.entity.Course">
+		update s_course set
+		c_name=#{cName},c_classRoom=#{cClassRoom} where
+		c_id=#{cId}
+	</update>
+	<select id="queryCourseAll" parameterType="java.lang.String"
+		resultMap="findCourse">
+		SELECT*from s_course
+	</select>
+	<!-- 实现分页查询，条件查询，模糊查询 -->
+	<select id="queryClassroomByUserId" parameterType="com.hqyj.EduAdmSystem.system.util.Page"
+		resultMap="findCourse">
+		SELECT
+		s_course.c_id,
+		s_course.c_name,
+		s_course.c_classRoom
+		FROM
+		s_course
+		INNER JOIN s_grade ON s_course.c_id = s_grade.g_c_id
+		INNER
+		JOIN s_user ON s_grade.g_u_id = s_user.u_id
+		<where>
+		<if test="t.user.uId != null and t.user.uId !=''">
+				AND u_id=#{t.user.uId}
+			</if>
+			<if test="t.course.cId != null and t.course.cId !=''">
+				AND c_id = #{t.course.cId}
+			</if>
+			<if test="t.course.cName != null and t.course.cName !=''">
+				AND c_name like '%' #{t.course.cName} '%'
+			</if>
+		
+			<if test="t.course.cClassRoom != null and t.course.cClassRoom !=''">
+				AND c_classRoom like '%' #{t.course.cClassRoom} '%'
+			</if>
+
+		</where>
+		ORDER BY c_id ASC
+		limit #{start},#{rows}
+	</select>
+	
+	
+	<!-- 分页查询总条数 -->
+	<select id="queryAllClassroomCountByUserIdByPage" parameterType="com.hqyj.EduAdmSystem.system.util.Page"
+		resultType="java.lang.Integer">
+		SELECT
+		COUNT(*)
+		FROM
+		s_course
+		INNER JOIN s_grade ON s_course.c_id = s_grade.g_c_id
+		INNER
+		JOIN s_user ON s_grade.g_u_id = s_user.u_id
+		<where>
+		<if test="t.user.uId != null and t.user.uId !=''">
+				AND u_id=#{t.user.uId}
+			</if>
+			<if test="t.course.cId != null and t.course.cId !=''">
+				AND c_id = #{t.course.cId}
+			</if>
+			<if test="t.course.cName != null and t.course.cName !=''">
+				AND c_name like '%' #{t.course.cName} '%'
+			</if>
+		
+			<if test="t.course.cClassRoom != null and t.course.cClassRoom !=''">
+				AND c_classRoom like '%' #{t.course.cClassRoom} '%'
+			</if>
+
+		</where>
+	</select>
+
+
+
+	<!-- 分页查询总条数 -->
+	<select id="queryAllClassroomCountByPage" parameterType="com.hqyj.EduAdmSystem.system.util.Page"
+		resultType="java.lang.Integer">
+		SELECT COUNT(*) from s_course
+		<where>
+			<if test="t.cId != null and t.cId !=''">
+				AND c_id = #{t.cId}
+			</if>
+			<if test="t.cName != null and t.cName !=''">
+				AND c_name like '%' #{t.cName} '%'
+			</if>
+		
+			<if test="t.cClassRoom != null and t.cClassRoom !=''">
+				AND c_classRoom like '%' #{t.cClassRoom} '%'
+			</if>
+
+		</where>
+	</select>
+
+	<!-- 实现分页查询，条件查询，模糊查询 -->
+	<select id="queryAllClassroomBypage" parameterType="com.hqyj.EduAdmSystem.system.util.Page"
+		resultMap="findCourse">
+		SELECT * FROM s_course
+		<where>
+			<if test="t.cId != null and t.cId !=''">
+				AND c_id = #{t.cId}
+			</if>
+			<if test="t.cName != null and t.cName !=''">
+				AND c_name like '%' #{t.cName} '%'
+			</if>
+		
+			<if test="t.cClassRoom != null and t.cClassRoom !=''">
+				AND c_classRoom like '%' #{t.cClassRoom} '%'
+			</if>
+
+		</where>
+		ORDER BY c_id ASC
+		limit #{start},#{rows}
+	</select>
+
+</mapper>
