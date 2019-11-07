@@ -323,7 +323,7 @@ layui.use('table', function(){
        }); 
     } else if(obj.event === 'edit'){
     	/* 修改用户信息功能 */
-    	//var userForCU_ui= user;
+        //var userForCU_ui= user;
     	layer.prompt({
         formType: 2
         ,value: '用户id：'+user.uId+'\n用户名:'+user.uUsername+'\n密码：'+user.uRealPW + '\n真实姓名：'+ user.uRealname
@@ -437,7 +437,9 @@ layui.use('table', function(){
 	<script type="text/html" id="roleIdTemplet">
 	{{#
  		var fn = function(roleId){
-			if(roleId == '2'){
+			if(roleId == '1'){
+				return '超级管理员';
+			}else if(roleId == '2'){
 				return '班主任';
 			}else if(roleId == '3'){
 				return '讲师';

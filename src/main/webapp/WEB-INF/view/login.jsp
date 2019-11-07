@@ -119,8 +119,8 @@
 	$(document).ready(function () {  
 	    if (window != top) {
 	    	layer.msg("登陆信息已过期,将自动跳转到登陆界面~",{time : 3000,icon : 5,anim : 6,shade:  0.3,shadeClose:true})
-	        top.location.href = location.href;  
-	    }  
+            top.location.href = location.href;
+        }
 	}); 
 	  //监听提交
 	  form.on('submit(formRegister)', function(data){

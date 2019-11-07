@@ -15,7 +15,7 @@
 	<!-- 数据库连接池 :dataSource -->
 	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
 		init-method="init" destroy-method="close">
-		<property name="url" value="jdbc:mysql://120.78.237.117:3306/EduAdmSys" />
+		<property name="url" value="jdbc:mysql://122.51.93.238:3306/EduAdmSys" />
 		<property name="username" value="EduAdmSys" />
 		<property name="password" value="EduAdmSys" />
 

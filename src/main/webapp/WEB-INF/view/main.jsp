@@ -15,7 +15,7 @@
 <meta charset="utf-8">
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>后台管理首页</title>
+<title>首页~</title>
 <link rel="stylesheet"
 	href="https://www.layuicdn.com/layui/css/layui.css">
 </head>
